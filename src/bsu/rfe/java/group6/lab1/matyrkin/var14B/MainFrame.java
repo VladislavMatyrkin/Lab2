@@ -23,39 +23,59 @@ import javax.swing.JTextField;
 // Главный класс приложения, он же класс фрейма
 public class MainFrame extends JFrame {
     // Размеры окна приложения в виде констант
-    private static final int WIDTH = 400;
-    private static final int HEIGHT = 320;
+    private static final int WIDTH = 500;
+    private static final int HEIGHT = 420;
     // Текстовые поля для считывания значений переменных,
 // как компоненты, совместно используемые в различных методах
     private JTextField textFieldX;
     private JTextField textFieldY;
+    private JTextField textFieldZ; // Поле ввода для Z
     // Текстовое поле для отображения результата,
 // как компонент, совместно используемый в различных методах
     private JTextField textFieldResult;
-    // Группа радио-кнопок для обеспечения уникальности выделения в группе
-    private ButtonGroup radioButtons = new ButtonGroup();
-    // Контейнер для отображения радио-кнопок
+    private ButtonGroup formulaButtons = new ButtonGroup();
     private Box hboxFormulaType = Box.createHorizontalBox();
+
+    private ButtonGroup memoryButtons = new ButtonGroup(); // Группа для выбора переменной памяти
+    private Box hboxMemoryType = Box.createHorizontalBox(); // Панель для выбора переменной памяти
+
     private int formulaId = 1;
-    // Формула №1 для рассчѐта
-    public Double calculate1(Double x, Double y) {
-        return x*x + y*y;
+    private int memoryId = 1; // Активная переменная памяти
+
+    private Double mem1 = 0.0, mem2 = 0.0, mem3 = 0.0; // Переменные памяти
+
+    // Формула №1
+    public Double calculate1(Double x, Double y, Double z) {
+        return Math.pow(Math.log(z) + Math.sin(Math.PI * Math.pow(z, 2)), 0.25) /
+                Math.pow(y * y + Math.exp(Math.cos(x)) + Math.sin(y), Math.sin(x));
     }
-    // Формула №2 для рассчѐта
-    public Double calculate2(Double x, Double y) {
-        return x*x*x + 1/y;
+
+    // Формула №2
+    public Double calculate2(Double x, Double y, Double z) {
+        return Math.sqrt(y) * (3 * Math.pow(z, x) / Math.sqrt(1 + Math.pow(y, 3)));
     }
-    // Вспомогательный метод для добавления кнопок на панель
+
+    // Добавление радио-кнопки для выбора формулы
     private void addRadioButton(String buttonName, final int formulaId) {
         JRadioButton button = new JRadioButton(buttonName);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 MainFrame.this.formulaId = formulaId;
-
             }
         });
-        radioButtons.add(button);
+        formulaButtons.add(button);
         hboxFormulaType.add(button);
+    }
+    // Добавление радио-кнопки для выбора переменной памяти
+    private void addMemoryButton(String buttonName, final int memoryId) {
+        JRadioButton button = new JRadioButton(buttonName);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                MainFrame.this.memoryId = memoryId;
+            }
+        });
+        memoryButtons.add(button);
+        hboxMemoryType.add(button);
     }
     // Конструктор класса
     public MainFrame() {
@@ -65,14 +85,16 @@ public class MainFrame extends JFrame {
 // Отцентрировать окно приложения на экране
         setLocation((kit.getScreenSize().width - WIDTH)/2,
                 (kit.getScreenSize().height - HEIGHT)/2);
+        // Настройка панели выбора формулы
         hboxFormulaType.add(Box.createHorizontalGlue());
         addRadioButton("Формула 1", 1);
         addRadioButton("Формула 2", 2);
-        radioButtons.setSelected(
-                radioButtons.getElements().nextElement().getModel(), true);
+        formulaButtons.setSelected(
+                formulaButtons.getElements().nextElement().getModel(), true);
         hboxFormulaType.add(Box.createHorizontalGlue());
         hboxFormulaType.setBorder(
                 BorderFactory.createLineBorder(Color.YELLOW));
+
 // Создать область с полями ввода для X и Y
         JLabel labelForX = new JLabel("X:");
         textFieldX = new JTextField("0", 10);
@@ -80,6 +102,10 @@ public class MainFrame extends JFrame {
         JLabel labelForY = new JLabel("Y:");
         textFieldY = new JTextField("0", 10);
         textFieldY.setMaximumSize(textFieldY.getPreferredSize());
+        JLabel labelForZ = new JLabel("Z:"); // Метка для Z
+        textFieldZ = new JTextField("0", 10);
+        textFieldZ.setMaximumSize(textFieldZ.getPreferredSize());
+
         Box hboxVariables = Box.createHorizontalBox();
         hboxVariables.setBorder(
                 BorderFactory.createLineBorder(Color.RED));
@@ -91,6 +117,10 @@ public class MainFrame extends JFrame {
         hboxVariables.add(labelForY);
         hboxVariables.add(Box.createHorizontalStrut(10));
         hboxVariables.add(textFieldY);
+        hboxVariables.add(Box.createHorizontalStrut(100));
+        hboxVariables.add(labelForZ);
+        hboxVariables.add(Box.createHorizontalStrut(10));
+        hboxVariables.add(textFieldZ);
         hboxVariables.add(Box.createHorizontalGlue());
 // Создать область для вывода результата
         JLabel labelForResult = new JLabel("Результат:");
@@ -111,11 +141,12 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent ev) {
                 try {Double x = Double.parseDouble(textFieldX.getText());
                     Double y = Double.parseDouble(textFieldY.getText());
+                    Double z= Double.parseDouble(textFieldZ.getText());
                     Double result;
                     if (formulaId==1)
-                        result = calculate1(x, y);
+                        result = calculate1(x, y,z);
                     else
-                        result = calculate2(x, y);
+                        result = calculate2(x, y,z);
                     textFieldResult.setText(result.toString());
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(MainFrame.this,
