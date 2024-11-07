@@ -179,6 +179,17 @@ public class MainFrame extends JFrame {
                 textFieldResult.setText("0");
             }
         });
+        // Добавление кнопки MC
+        JButton buttonMC = new JButton("MC");
+        // Определить и зарегистрировать обработчик нажатия на кнопку
+        buttonMC.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                textFieldX.setText("0");
+                textFieldY.setText("0");
+                textFieldResult.setText("0");
+            }
+        });
+
         Box hboxButtons = Box.createHorizontalBox();
         hboxButtons.add(Box.createHorizontalGlue());
         hboxButtons.add(buttonCalc);
