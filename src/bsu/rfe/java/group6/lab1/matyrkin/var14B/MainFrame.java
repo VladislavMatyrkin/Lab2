@@ -122,12 +122,23 @@ public class MainFrame extends JFrame {
         hboxVariables.add(Box.createHorizontalStrut(10));
         hboxVariables.add(textFieldZ);
         hboxVariables.add(Box.createHorizontalGlue());
-// Создать область для вывода результата
+
+        // Настройка панели выбора переменной памяти
+        hboxMemoryType.add(Box.createHorizontalGlue());
+        addMemoryButton("Переменная 1", 1);
+        addMemoryButton("Переменная 2", 2);
+        addMemoryButton("Переменная 3", 3);
+        memoryButtons.setSelected(
+                memoryButtons.getElements().nextElement().getModel(), true);
+        hboxMemoryType.add(Box.createHorizontalGlue());
+        hboxMemoryType.setBorder(
+                BorderFactory.createLineBorder(Color.ORANGE));
+        // Создание области для вывода результата
         JLabel labelForResult = new JLabel("Результат:");
-//labelResult = new JLabel("0");
         textFieldResult = new JTextField("0", 10);
         textFieldResult.setMaximumSize(
                 textFieldResult.getPreferredSize());
+
         Box hboxResult = Box.createHorizontalBox();
         hboxResult.add(Box.createHorizontalGlue());
         hboxResult.add(labelForResult);
@@ -135,31 +146,36 @@ public class MainFrame extends JFrame {
         hboxResult.add(textFieldResult);
         hboxResult.add(Box.createHorizontalGlue());
         hboxResult.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-// Создать область для кнопок
+
+// Создание кнопок вычисления и сброса
         JButton buttonCalc = new JButton("Вычислить");
         buttonCalc.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
-                try {Double x = Double.parseDouble(textFieldX.getText());
+                try {
+                    Double x = Double.parseDouble(textFieldX.getText());
                     Double y = Double.parseDouble(textFieldY.getText());
-                    Double z= Double.parseDouble(textFieldZ.getText());
+                    Double z = Double.parseDouble(textFieldZ.getText());
                     Double result;
-                    if (formulaId==1)
-                        result = calculate1(x, y,z);
+                    // Выбор формулы
+                    if (formulaId == 1)
+                        result = calculate1(x, y, z);
                     else
-                        result = calculate2(x, y,z);
+                        result = calculate2(x, y, z);
                     textFieldResult.setText(result.toString());
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(MainFrame.this,
-                            "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа",
+                            "Ошибка в формате записи числа", "Ошибочный формат числа",
                             JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
+
         JButton buttonReset = new JButton("Очистить поля");
         buttonReset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 textFieldX.setText("0");
                 textFieldY.setText("0");
+                textFieldZ.setText("0"); // Очистка поля Z
                 textFieldResult.setText("0");
             }
         });
