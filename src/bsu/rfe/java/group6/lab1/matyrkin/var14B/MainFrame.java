@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 // Главный класс приложения, он же класс фрейма
 public class MainFrame extends JFrame {
     // Размеры окна приложения в виде констант
-    private static final int WIDTH = 500;
+    private static final int WIDTH = 700;
     private static final int HEIGHT = 420;
     // Текстовые поля для считывания значений переменных,
 // как компоненты, совместно используемые в различных методах
@@ -35,12 +35,14 @@ public class MainFrame extends JFrame {
     private JTextField textFieldResult;
     private ButtonGroup formulaButtons = new ButtonGroup();
     private Box hboxFormulaType = Box.createHorizontalBox();
-
-    private ButtonGroup memoryButtons = new ButtonGroup(); // Группа для выбора переменной памяти
-    private Box hboxMemoryType = Box.createHorizontalBox(); // Панель для выбора переменной памяти
-
+    // Группа для выбора переменной памяти
+    private ButtonGroup memoryButtons = new ButtonGroup();
+    // Панель для выбора переменной памяти
+    private Box hboxMemoryType = Box.createHorizontalBox();
+    // Идентификатор выбранной формулы
     private int formulaId = 1;
-    private int memoryId = 1; // Активная переменная памяти
+    // Активная переменная памяти
+    private int memoryId = 1;
 
     private Double mem1 = 0.0, mem2 = 0.0, mem3 = 0.0; // Переменные памяти
 
@@ -57,9 +59,13 @@ public class MainFrame extends JFrame {
 
     // Добавление радио-кнопки для выбора формулы
     private void addRadioButton(String buttonName, final int formulaId) {
+        // Создать экземпляр радио-кнопки с заданным текстом
         JRadioButton button = new JRadioButton(buttonName);
+        // Определить и зарегистрировать обработчик
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
+                // Который будет устанавливать идентификатор выбранной
+                // формулы в классе Formula равным formulaId
                 MainFrame.this.formulaId = formulaId;
             }
         });
@@ -83,21 +89,25 @@ public class MainFrame extends JFrame {
         setSize(WIDTH, HEIGHT);
         Toolkit kit = Toolkit.getDefaultToolkit();
 // Отцентрировать окно приложения на экране
-        setLocation((kit.getScreenSize().width - WIDTH)/2,
-                (kit.getScreenSize().height - HEIGHT)/2);
-        // Настройка панели выбора формулы
+        setLocation((kit.getScreenSize().width - WIDTH) / 2,
+                (kit.getScreenSize().height - HEIGHT) / 2);
+// Настройка панели выбора формулы
+// Добавить «клей» C1-H1 с левой стороны
         hboxFormulaType.add(Box.createHorizontalGlue());
         addRadioButton("Формула 1", 1);
         addRadioButton("Формула 2", 2);
-        formulaButtons.setSelected(
-                formulaButtons.getElements().nextElement().getModel(), true);
+// Установить выделенной 1-ую кнопку из группы
+        formulaButtons.setSelected(formulaButtons.getElements().nextElement().getModel(), true);
+// Добавить «клей» C1-H2 с правой стороны
         hboxFormulaType.add(Box.createHorizontalGlue());
-        hboxFormulaType.setBorder(
-                BorderFactory.createLineBorder(Color.YELLOW));
-
-// Создать область с полями ввода для X и Y
+// Задать рамку для коробки с помощью класса BorderFactory
+        hboxFormulaType.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+        // Создать область с полями ввода для X,Y,Z
         JLabel labelForX = new JLabel("X:");
+        // Создать текстовое поле для ввода значения переменной X,
+        // (по умолчанию 0)
         textFieldX = new JTextField("0", 10);
+        // Установить макс размер = желаемому для предотвращения масштабирования
         textFieldX.setMaximumSize(textFieldX.getPreferredSize());
         JLabel labelForY = new JLabel("Y:");
         textFieldY = new JTextField("0", 10);
@@ -133,12 +143,11 @@ public class MainFrame extends JFrame {
         hboxMemoryType.add(Box.createHorizontalGlue());
         hboxMemoryType.setBorder(
                 BorderFactory.createLineBorder(Color.ORANGE));
+
         // Создание области для вывода результата
         JLabel labelForResult = new JLabel("Результат:");
-        textFieldResult = new JTextField("0", 10);
-        textFieldResult.setMaximumSize(
-                textFieldResult.getPreferredSize());
-
+        textFieldResult = new JTextField("0", 15);
+        textFieldResult.setMaximumSize(textFieldResult.getPreferredSize());
         Box hboxResult = Box.createHorizontalBox();
         hboxResult.add(Box.createHorizontalGlue());
         hboxResult.add(labelForResult);
@@ -147,7 +156,7 @@ public class MainFrame extends JFrame {
         hboxResult.add(Box.createHorizontalGlue());
         hboxResult.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
-// Создание кнопок вычисления и сброса
+        // Создание кнопок вычисления и сброса
         JButton buttonCalc = new JButton("Вычислить");
         buttonCalc.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
@@ -161,6 +170,7 @@ public class MainFrame extends JFrame {
                         result = calculate1(x, y, z);
                     else
                         result = calculate2(x, y, z);
+                    // Установить текст надписи равным результату
                     textFieldResult.setText(result.toString());
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(MainFrame.this,
@@ -179,33 +189,98 @@ public class MainFrame extends JFrame {
                 textFieldResult.setText("0");
             }
         });
+
         // Добавление кнопки MC
         JButton buttonMC = new JButton("MC");
-        // Определить и зарегистрировать обработчик нажатия на кнопку
         buttonMC.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
-                textFieldX.setText("0");
-                textFieldY.setText("0");
-                textFieldResult.setText("0");
+                switch (memoryId) {
+                    case 1: mem1 = 0.0; break;
+                    case 2: mem2 = 0.0; break;
+                    case 3: mem3 = 0.0; break;
+                }
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "Память очищена", "MC", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
+        // Добавление кнопки M+
+        JButton buttonMPlus = new JButton("M+");
+        buttonMPlus.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    Double result = Double.parseDouble(textFieldResult.getText());
+                    Double x = Double.parseDouble(textFieldX.getText());
+                    Double y = Double.parseDouble(textFieldY.getText());
+                    Double z = Double.parseDouble(textFieldZ.getText());
+                    switch (memoryId) {
+                        case 1:
+                            mem1 +=result;
+                            break;
+                        case 2:
+                            mem2 +=result;
+                            break;
+                        case 3:
+                            mem3 += result;
+                            break;
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(MainFrame.this,
+                            "Ошибка в формате записи числа", "Ошибочный формат числа",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        // Добавление кнопки для показа значений памяти
+        JButton buttonShowMemory = new JButton("Показать память");
+        buttonShowMemory.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                String memoryContent = "Переменная 1: " + mem1 + "\n" +
+                        "Переменная 2: " + mem2 + "\n" +
+                        "Переменная 3: " + mem3;
+                JOptionPane.showMessageDialog(MainFrame.this, memoryContent, "Текущие значения памяти",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        // Создать коробку с горизонтальной укладкой
         Box hboxButtons = Box.createHorizontalBox();
+// Добавить «клей» C4-H1 с левой стороны
         hboxButtons.add(Box.createHorizontalGlue());
+// Добавить кнопку «Вычислить» в компоновку
         hboxButtons.add(buttonCalc);
+// Добавить распорку в 30 пикселов C4-H2 между кнопками
         hboxButtons.add(Box.createHorizontalStrut(30));
+// Добавить кнопку «Очистить поля» в компоновку
         hboxButtons.add(buttonReset);
+        hboxButtons.add(Box.createHorizontalStrut(30));
+        hboxButtons.add(buttonMC);
+        hboxButtons.add(Box.createHorizontalStrut(30));
+        hboxButtons.add(buttonMPlus);
+// Добавить новую кнопку для показа памяти
+        hboxButtons.add(Box.createHorizontalStrut(30));
+        hboxButtons.add(buttonShowMemory);
+// Добавить «клей» C4-H3 с правой стороны
         hboxButtons.add(Box.createHorizontalGlue());
-        hboxButtons.setBorder(
-                BorderFactory.createLineBorder(Color.GREEN));
+// Задать рамку для контейнера
+        hboxButtons.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 // Связать области воедино в компоновке BoxLayout
+// Создать контейнер «коробка с вертикальной укладкой»
         Box contentBox = Box.createVerticalBox();
+// Добавить «клей» V1 сверху
         contentBox.add(Box.createVerticalGlue());
+// Добавить контейнер с выбором переменной
+        contentBox.add(hboxMemoryType);
+// Добавить контейнер с выбором формулы
         contentBox.add(hboxFormulaType);
+// Добавить контейнер с переменными
         contentBox.add(hboxVariables);
+// Добавить контейнер с результатом вычислений
         contentBox.add(hboxResult);
+// Добавить контейнер с кнопками
         contentBox.add(hboxButtons);
+// Добавить «клей» V2 снизу
         contentBox.add(Box.createVerticalGlue());
+// Установить «вертикальную коробку» в область содержания главного окна
         getContentPane().add(contentBox, BorderLayout.CENTER);
     }
     // Главный метод класса
